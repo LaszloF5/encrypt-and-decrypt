@@ -60,7 +60,7 @@ function App() {
   };
 
   // Copy function
-
+  
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(isSecret);
