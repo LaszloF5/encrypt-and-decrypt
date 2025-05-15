@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import "./App.css";
 import { strict } from "assert";
+import { resourceLimits } from "worker_threads";
 
 function App() {
   const [text, setText] = useState<string>("");
@@ -29,14 +30,35 @@ function App() {
 
   // Encrypt message
 
+  const getRandomLetter = (): string => {
+    const letters = "abCdEfghIjklMnopQrstuVwxYz";
+    let index = Math.floor(Math.random() * letters.length);
+    return letters[index];
+  }
+
+  const randomPlus = (text: string): string => {
+    let result = '';
+    for(let i = 0; i < text.length; ++i) {
+      result += text[i];
+      if(Math.trunc(Math.random() * 10) >= 5) {
+        result += getRandomLetter();
+      }
+    }
+    return result;
+  }
+
   const toSecret = (): void => {
     const encoded: string[] = [...text];
 
-    const numEncoded: number[] = encoded.map(
+    const numEncoded: (number)[] = encoded.map(
       (char, i) => Number(char.charCodeAt(0)) + ((i * 3) % 10)
     );
 
-    setIsSecret(numEncoded.join("-"));
+    let stringFormat = numEncoded.join("-");
+
+    let newMix = randomPlus(stringFormat);
+
+    setIsSecret(newMix);
 
     setIsSaved(false);
   };
@@ -45,7 +67,17 @@ function App() {
 
   const fromSecret = (e: React.FormEvent<HTMLFormElement>): void => {
     e.preventDefault();
-    const deCoded: string = inputSecret
+
+    let cleanCode: string = '';
+
+  for(let i = 0; i < inputSecret.length; ++i) {
+    let currSecret = inputSecret[i];
+    if((currSecret >= '0' && currSecret <= '9') || currSecret === '-') {
+      cleanCode += currSecret;
+    }
+  }    
+
+    const deCoded: string = cleanCode
       .split("-")
       .map((code, i) => String.fromCharCode(Number(code) - ((i * 3) % 10)))
       .join("");
@@ -110,10 +142,11 @@ function App() {
         )}
       </form>
       <form onSubmit={fromSecret}>
-        <label htmlFor="fromSecret">Paste or type your code</label>
+        <label htmlFor="fromSecret-id">Paste or type your code</label>
         <input
           type="text"
           name="fromSecret"
+          id="fromSecret-id"
           value={inputSecret}
           autoComplete="off"
           onChange={(e) => setInputSecret(e.target.value)}
