@@ -2,7 +2,7 @@
   "name": "encrypt-and-decrypt",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://laszlof5.github.io/<encrypt-and-decrypt>",
+  "homepage": "https://LaszloF5.github.io/encrypt-and-decrypt",
   "dependencies": {
     "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
